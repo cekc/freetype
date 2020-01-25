@@ -345,7 +345,9 @@ func (f *Font) parseKern() error {
 		return UnsupportedError(fmt.Sprintf("kern coverage: 0x%04x", coverage))
 	}
 	f.nKern, offset = int(u16(f.kern, offset)), offset+2
-	if 6*f.nKern != length-14 {
+
+	// See https://github.com/golang/freetype/issues/8#issuecomment-497387796
+	if uint16(6*f.nKern) != uint16(length-14) || 6*f.nKern > len(f.kern)-18 {
 		return FormatError("bad kern table length")
 	}
 	return nil
